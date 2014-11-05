@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1415180794 source:/home/ivanmatveev/Documents/programm/sdl/tank/main.cpp
+1415216465 source:/home/ivanmatveev/Documents/programm/sdl/tank/main.cpp
 	<cstdlib>
 	<stdlib.h>
 	<SDL/SDL.h>
@@ -206,7 +206,7 @@
 	<stdio.h>
 	"tank.h"
 
-1414944478 /home/ivanmatveev/Documents/programm/sdl/tank/tank.h
+1415224091 /home/ivanmatveev/Documents/programm/sdl/tank/tank.h
 	<cstdlib>
 	<stdlib.h>
 	<SDL/SDL.h>
@@ -214,7 +214,7 @@
 	<SDL_ttf.h>
 	"Bullet.h"
 
-1415180433 /home/ivanmatveev/Documents/programm/sdl/tank/drawing.h
+1415224044 /home/ivanmatveev/Documents/programm/sdl/tank/drawing.h
 	<cstdlib>
 	<stdlib.h>
 	<SDL/SDL.h>

@@ -37,20 +37,13 @@ int InitImages(Tank *tank, Tank *gray_tank)
         if (!tank->picture(i))
             return -1;
     }
-    for (int i = 0; i < 5; i++)
-    {
-        char path[20];
-        for (int j = 0; j < 20; j++)
-            path[j] = 0;
-        sprintf(path, "fire%c.bmp", (char)(i + '0'));
-        gray_tank->fire(SDL_LoadBMP(path), i);
-        SDL_SetColorKey(gray_tank->fire(i),
+    gray_tank->fire(SDL_LoadBMP("fire.bmp"));
+    SDL_SetColorKey(gray_tank->fire(),
                         SDL_SRCCOLORKEY,
-                        SDL_MapRGB(gray_tank->fire(i)->format,
+                        SDL_MapRGB(gray_tank->fire()->format,
                         255, 255, 255));
-        if (!gray_tank->fire(i))
+    if (!gray_tank->fire())
             return -1;
-    }
     for (int i = 0; i < 4; i++)
     {
         char path[20];
@@ -139,6 +132,7 @@ void PrintWall(void)
         if (arrayWall[j][i])
             DrawWall(j, i);
 }
+
 void DrawTank(Tank *tank)
 {
     if (tank->exist())
@@ -148,14 +142,19 @@ void DrawTank(Tank *tank)
                 tank->w(),
                 tank->h(),
                 0, 0);
-    else if (tank->time_fire() < 5*3) {
-        DrawImage(tank->fire(tank->time_fire() / 3),
-                tank->x(),
-                tank->y(),
-                tank->w(),
-                tank->h(),
-                0, 0);
-        tank->time_fire(tank->time_fire() + 1);
+    else {
+        if (tank->frame_fire() < tank->max_frame_fire()) {
+            DrawImage(tank->fire(),
+                    tank->x(),
+                    tank->y(),
+                    tank->w(),
+                    tank->h(),
+                    0, tank->h()*(tank->frame_fire()) );
+        }
+        if (tank->time() + tank->speed_fire() < SDL_GetTicks()) {
+            tank->frame_fire(tank->frame_fire() + 1);
+            tank->time(SDL_GetTicks());
+        }
     }
 }
 

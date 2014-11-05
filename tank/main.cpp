@@ -160,10 +160,8 @@ int main ( int argc, char** argv )
     }
 
     // free loaded bitmap
-    for (int i = 0; i < 4; i++)
-        SDL_FreeSurface(my_tank.picture(i));
-    for (int i = 0; i < 4; i++)
-        SDL_FreeSurface(gray_tank.picture(i));
+    my_tank.clean();
+    gray_tank.clean();
 
     SDL_FreeSurface(Wall);
     SDL_FreeSurface(background);
