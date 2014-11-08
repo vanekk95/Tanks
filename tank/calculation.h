@@ -19,6 +19,23 @@ extern SDL_Surface *Wall;
 
 void CreateBullet(Tank* tank);
 
+void InitTank(Tank *my_tank)
+{
+    my_tank->x ((screen->w - my_tank->picture(0)->w) / 2);
+    my_tank->y ((screen->h - my_tank->picture(0)->h) / 2);
+    my_tank->napr (Forward);
+    my_tank->w (my_tank->picture(0)->w);
+    my_tank->h (my_tank->picture(0)->h);
+}
+
+void InitGrayTank(Tank *tank)
+{
+    tank->x (3*(screen->w - tank->picture(0)->w) / 4);
+    tank->y ((screen->h - tank->picture(0)->h) / 4);
+    tank->napr (Back);
+    tank->w (tank->picture(0)->w);
+    tank->h (tank->picture(0)->h);
+}
 bool In_screen(Tank *tank, int napr)
 {
     switch(napr)
@@ -113,162 +130,40 @@ void GoTank(Tank *tank)
 }
 */
 
-bool free_place (int x, int y)
-{
-    if (x < 0 || y < 0 || x + 2 >= W || y + 2 >= H)
-        return false;
-    for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 3; j++)
-        if (arrayWall[x + i][y + j])
-            return false;
-    return true;
-}
 void GoTank(Tank *my_tank, Tank *gray_tank)
 {
     if (!gray_tank->exist() || !my_tank->exist())
         return;
 
-    static int timesCalled = 0;
-//    int dy = my_tank->y() - gray_tank->y();
-//    int dx = my_tank->x() - gray_tank->x();
 
-    if (timesCalled++ > 15)
+    static int timesCalled = 0;
+    int dy = my_tank->y() - gray_tank->y();
+    int dx = my_tank->x() - gray_tank->x();
+
+    if (timesCalled++ >10)
     {
         timesCalled = 0;
         CreateBullet(gray_tank);
     }
-    static bool notDone = true;
-    struct point {
-        int x;
-        int y;
-    };
-    static struct point path[200];
-    static int index;
-    int x = gray_tank->x() / Wall->w;
-    int y = gray_tank->y() / Wall->h;
-    int goal_x = my_tank->x() / Wall->w;
-    int goal_y = my_tank->y() / Wall->h;
-
-    struct cell {
-        int status;
-        int path;
-        int prev_x;
-        int prev_y;
-    };
-    static struct cell _map[W][H];
-if (notDone) {
-
-
-    // status = 0 - не посещено
-    // status = 1 - посещено
-    #define Infinity 1000000
-    for (int i = 0; i < W; i++)
-    for (int j = 0; j < H; j++) {
-        _map[i][j].status = 0;
-        _map[i][j].path = Infinity;
-    }
-    _map[x][y].path = 0;
-    _map[x][y].prev_x = -1;
-    _map[x][y].prev_y = -1;
-
-    int t = 1;
-    while (t)
-    {
-        t = 0;
-        for (int i = 0; i < W; i++)
-        for (int j = 0; j < H; j++)
-            if (_map[i][j].status == 0 && _map[i][j].path < Infinity)
-            {
-                t++;
-                if (free_place(i-1, j) &&
-                    _map[i-1][j].path > _map[i][j].path + 1) {
-                            _map[i-1][j].path = _map[i][j].path + 1;
-                            _map[i-1][j].prev_x = i;
-                            _map[i-1][j].prev_y = j;
-                }
-                if (free_place(i+1, j) &&
-                    _map[i+1][j].path > _map[i][j].path + 1) {
-                            _map[i+1][j].path = _map[i][j].path + 1;
-                            _map[i+1][j].prev_x = i;
-                            _map[i+1][j].prev_y = j;
-                }
-
-                if (free_place(i, j-1) &&
-                    _map[i][j-1].path > _map[i][j].path + 1) {
-                            _map[i][j-1].path = _map[i][j].path + 1;
-                            _map[i][j-1].prev_x = i;
-                            _map[i][j-1].prev_y = j;
-                }
-
-                if (free_place(i, j+1) &&
-                    _map[i][j+1].path > _map[i][j].path + 1) {
-                            _map[i][j+1].path = _map[i][j].path + 1;
-                            _map[i][j+1].prev_x = i;
-                            _map[i][j+1].prev_y = j;
-                }
-                _map[i][j].status = 1;
-            }
-    }
-
-    for (int j = 0; j < H; j++) {
-    for (int i = 0; i < W; i++)
-        printf("%d ", _map[i][j].status);
-    printf("\n");
-    }
-
-    int i = 0;
-
-    do {
-        path[i].x = goal_x;
-        path[i].y = goal_y;
-        goal_x = _map[path[i].x][path[i].y].prev_x;
-        goal_y = _map[path[i].x][path[i].y].prev_y;
-        i++;
-    } while (goal_x >= 0 && goal_y >= 0 && _map[goal_x][goal_y].path < Infinity);
-    index = i - 2;
-    printf("\nindex = %d\n", index);
-    for (int k = i-1; k > 0; k--)
-        printf("%d %d\n", path[k].x, path[k].y);
-}
-
-    bool f = true;
-//    if (NotWall(gray_tank, gray_tank->napr()))
-        f = gray_tank->go_into(path[index].x*Wall->w, path[index].y*Wall->h);
-    if (!f) index--;
-    notDone = false;
-    if (gray_tank->time() + 3000 < SDL_GetTicks() || index == 0) {
-        notDone = true;
-        gray_tank->time(SDL_GetTicks());
-    }
-
-/*
-    static bool isOK;
-    isOK = false;
    if (abs(dy) > 10)
    {
         if (dy > 0)
             gray_tank->napr(Back);
         else
             gray_tank->napr(Forward);
-
-        if (NotWall(gray_tank, gray_tank->napr()))
-            isOK = true;
-
     }
-    if (!isOK && abs(dx) > 10)
+    else if (abs(dx) > 10)
    {
         if (dx > 0)
             gray_tank->napr(Right);
         else
             gray_tank->napr(Left);
-        if (NotWall(gray_tank, gray_tank->napr()))
-                isOK = true;
     }
 
-
- if (NotWall(gray_tank, gray_tank->napr()))
+     if (NotWall(gray_tank, gray_tank->napr()))
             gray_tank->run();
-*/
+
+
 }
 
 
@@ -307,33 +202,14 @@ void FlyBullet(Tank * tank, Tank *gray_tank)
     tank->bullets()->go_out();
 }
 
-bool InitWallandTanks(const char *file, Tank *my_tank, Tank *gray_tank)
+bool InitWall(const char *file)
 {
     FILE *f = fopen(file, "r");
     if (f != NULL) {
-        int i, j, c;
-        for (j = 0; j < H; j++)
-        for (i = 0; i < W; i++) {
-            fscanf(f, "%d", &c);
-            if (c < 2) arrayWall[i][j] = c;
-            else {
-                arrayWall[i][j] = 0;
-                if (c == 2) {
-                    my_tank->x(Wall->w * i);
-                    my_tank->y(Wall->h * j);
-                } else
-                if (c == 3) {
-                    gray_tank->x(Wall->w * i);
-                    gray_tank->y(Wall->h * j);
-                }
-            }
-        }
-        my_tank->napr (Forward);
-        my_tank->w (my_tank->picture(0)->w);
-        my_tank->h (my_tank->picture(0)->h);
-        gray_tank->napr (Back);
-        gray_tank->w (gray_tank->picture(0)->w);
-        gray_tank->h (gray_tank->picture(0)->h);
+        int i, j;
+        for (i = 0; i < H; i++)
+        for (j = 0; j < W; j++)
+            fscanf(f, "%d", &arrayWall[j][i]);
         return true;
     }
     else

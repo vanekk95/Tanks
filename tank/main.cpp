@@ -119,8 +119,10 @@ void Init(Tank *my_tank, Tank *gray_tank)
         printf("Unable to set 640x480 video: %s\n", SDL_GetError());
         exit(1);
     }
+    InitTank(my_tank);
+    InitGrayTank(gray_tank);
 
-    if ( !InitWallandTanks("map", my_tank, gray_tank) ) {
+    if ( !InitWall("map") ) {
         printf("Unable to open file\n");
         exit(1);
     }

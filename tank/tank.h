@@ -66,7 +66,6 @@ public:
     void right(bool f);
     void run(void);
     void clean(void);
-    bool go_into(int x, int y);
 
 private:
     int _x;
@@ -84,30 +83,7 @@ private:
     ArrayBullet *_bullets;
     bool _exist;
 };
-bool Tank::go_into(int x, int y)
-{
-    if (x < _x) {
-        _x -= _speed;
-        _napr = Left;
-        return true;
-    } else
-    if (x > _x) {
-        _x += _speed;
-        _napr = Right;
-        return true;
-    } else
-    if (y < _y) {
-        _y -= _speed;
-        _napr = Forward;
-        return true;
-    } else
-    if (y > _y) {
-        _y += _speed;
-        _napr = Back;
-        return true;
-    } else
-    return false;
-}
+
 void Tank::up(bool f) {
         if (f) _y -= _speed;
         _napr = Forward;
